@@ -86,7 +86,7 @@ export class UserController {
 
       try {
         const emailSent = await sendResetPasswordEmail(
-          'lovantoqwerty@gmail.com',
+          payload.email,
           'https://quizkuy.com/reset-password',
         );
         if (emailSent) {
