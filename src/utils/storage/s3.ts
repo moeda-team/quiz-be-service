@@ -16,18 +16,17 @@ export const uploadFileToS3 = async (
   buffer: Buffer,
   originalName: string,
   mimeType: string,
-  outletId: string,
   bucket: string,
 ): Promise<string> => {
   const ext = path.extname(originalName);
   let key;
   if (folderPath === 'menu') {
-    key = `${outletId}/menu/${Date.now()}-${randomUUID()}${ext}`;
+    key = `menu/${Date.now()}-${randomUUID()}${ext}`;
   } else if (folderPath === 'icon') {
-    key = `${outletId}/icon/${Date.now()}-${randomUUID()}${ext}`;
+    key = `icon/${Date.now()}-${randomUUID()}${ext}`;
   } else if (folderPath === 'attendance') {
     const today = new Date().toISOString().split('T')[0];
-    key = `${outletId}/attendance/${today}/${Date.now()}-${randomUUID()}${ext}`;
+    key = `attendance/${today}/${Date.now()}-${randomUUID()}${ext}`;
   } else {
     throw new Error('Invalid folder path');
   }

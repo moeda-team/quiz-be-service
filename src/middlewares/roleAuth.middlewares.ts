@@ -7,7 +7,7 @@ export function roleAuth(requiredRole: UserRole) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const user = (req as Request & { user: { userId: string } }).user;
 
-    const getUser = await prisma.user.findUnique({
+    const getUser = await prisma.users.findUnique({
       where: {
         id: user.userId,
       },

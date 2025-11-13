@@ -4,25 +4,40 @@ import { HealthController } from '../controllers/health.controller';
 import { AuthController } from '../controllers/auth.controller';
 import { jwtAuth, roleAuth, basicAuth } from '../../../middlewares';
 import { UserRole } from '../../../utils/auth/jwt';
-import { validateCreateUser, validateUpdateUser } from '../validators/user.validator';
+import { validateCreateUser } from '../validators/create.validator';
+import { validateUpdateUser } from '../validators/update.validator';
+import { validateDeleteUser } from '../validators/delete.validator';
+import { validateRequestResetPassword } from '../validators/requestResetPassword.validator';
 
 const router = Router();
 const userController = new UserController();
 const healthController = new HealthController();
 const authController = new AuthController();
 
-router.get('/health', healthController.check);
-router.post('/login', authController.login);
-router.get('/:id', jwtAuth, roleAuth(UserRole.STUDENT), userController.getUserById);
+router.get('/health', basicAuth, healthController.check);
 router.get('/', jwtAuth, roleAuth(UserRole.TEACHER), userController.getAllUsers);
-router.post('/', basicAuth, validateCreateUser, userController.createUser);
-router.put(
-  '/:id',
+router.get('/profile', jwtAuth, roleAuth(UserRole.STUDENT), userController.getUserById);
+router.post(
+  '/profile/reset',
+  basicAuth,
+  validateRequestResetPassword,
+  userController.resetPassword,
+);
+router.post('/sign/in', basicAuth, authController.login);
+router.post('/sign/up', basicAuth, validateCreateUser, userController.createUser);
+router.patch(
+  '/',
   jwtAuth,
   roleAuth(UserRole.STUDENT),
   validateUpdateUser,
   userController.updateUser,
 );
-router.delete('/:id', jwtAuth, roleAuth(UserRole.ADMIN), userController.deleteUser);
+router.delete(
+  '/',
+  jwtAuth,
+  roleAuth(UserRole.TEACHER),
+  validateDeleteUser,
+  userController.deleteUser,
+);
 
 export default router;

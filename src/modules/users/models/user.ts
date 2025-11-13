@@ -1,29 +1,31 @@
 export interface User {
   id: string;
   name: string;
-  position: string;
-  email: string;
   password: string;
-  address: string;
-  gender: string;
-  phoneNumber: string;
-  fee: number;
-  status: string;
   createdAt: Date;
+  createdBy: string;
   updatedAt: Date;
+  updatedBy: string;
+  deletedAt: Date;
+  deletedBy: string;
 }
 
 export interface CreateUserDTO {
-  outletId: string;
   name: string;
-  position: string;
   email: string;
   password: string;
-  address: string;
-  gender: string;
-  phoneNumber: string;
-  fee: number;
-  status: string;
 }
 
-export interface UpdateUserDTO extends Partial<CreateUserDTO> {}
+export interface DeleteUserDTO {
+  id: string[];
+}
+
+export interface RequestResetPasswordUserDTO {
+  email: string;
+}
+
+export interface ResetPasswordUserDTO {
+  email: string;
+}
+
+export interface UpdateUserDTO extends CreateUserDTO {}

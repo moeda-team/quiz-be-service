@@ -15,7 +15,7 @@ export class AuthController {
       });
     }
     try {
-      const user = await prisma.user.findFirst({ where: { email } });
+      const user = await prisma.users.findFirst({ where: { email } });
       if (!user) {
         return ResponseHandler.error(res, {
           message: 'Invalid credentials',
@@ -36,6 +36,7 @@ export class AuthController {
       return ResponseHandler.success(res, {
         message: 'Login successful',
         data: {
+          id: user.id,
           name: user.name,
           email: user.email,
           role: user.role,
