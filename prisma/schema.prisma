@@ -26,3 +26,14 @@ model users {
   deleted_at DateTime?
   deleted_by String?   @db.VarChar(36)
 }
+
+model reset_password {
+  id         String    @id @default(uuid()) @db.VarChar(36)
+  email      String    @db.VarChar(100)
+  created_at DateTime  @default(now())
+  created_by String    @db.VarChar(36)
+  updated_at DateTime? @updatedAt
+  updated_by String?   @db.VarChar(36)
+  deleted_at DateTime?
+  deleted_by String?   @db.VarChar(36)
+}

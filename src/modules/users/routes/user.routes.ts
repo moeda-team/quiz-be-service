@@ -8,6 +8,7 @@ import { validateCreateUser } from '../validators/create.validator';
 import { validateUpdateUser } from '../validators/update.validator';
 import { validateDeleteUser } from '../validators/delete.validator';
 import { validateRequestResetPassword } from '../validators/requestResetPassword.validator';
+import { validateResetPassword } from '../validators/resetPassword.validator';
 
 const router = Router();
 const userController = new UserController();
@@ -21,8 +22,9 @@ router.post(
   '/profile/reset/request',
   basicAuth,
   validateRequestResetPassword,
-  userController.resetPassword,
+  userController.requestResetPassword,
 );
+router.patch('/profile/reset', basicAuth, validateResetPassword, userController.resetPassword);
 router.post('/sign/in', basicAuth, authController.login);
 router.post('/sign/up', basicAuth, validateCreateUser, userController.createUser);
 router.patch(

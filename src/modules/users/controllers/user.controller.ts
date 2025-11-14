@@ -5,11 +5,13 @@ import {
   UpdateUserDTO,
   DeleteUserDTO,
   RequestResetPasswordUserDTO,
+  ResetPasswordUserDTO,
 } from '../models/user';
 import { ResponseHandler } from '../../../utils/response/responseHandler';
 import prisma from '../../../lib/prisma';
 import { hashPassword } from '../../../utils/auth/hash';
 import { sendResetPasswordEmail } from '../../../utils/mail/resetPassword';
+import { restoreUUID } from '@/utils/common/restoreUuid';
 
 export class UserController {
   async getAllUsers(req: Request, res: Response) {
@@ -70,7 +72,7 @@ export class UserController {
     }
   }
 
-  async resetPassword(req: Request, res: Response) {
+  async requestResetPassword(req: Request, res: Response) {
     const payload: RequestResetPasswordUserDTO = req.body;
 
     try {
@@ -84,10 +86,24 @@ export class UserController {
         });
       }
 
+      const resetPassword = await prisma.reset_password.create({
+        data: {
+          email: payload.email,
+          created_at: new Date(),
+          created_by: user.name,
+        },
+      });
+      if (!resetPassword) {
+        return ResponseHandler.error(res, {
+          message: 'Failed to create reset password',
+          statusCode: 500,
+        });
+      }
+
       try {
         const emailSent = await sendResetPasswordEmail(
           payload.email,
-          'https://quizkuy.com/reset-password',
+          'https://quizkuy.com/reset-password/?token=' + resetPassword.id.replaceAll('-', ''),
         );
         if (emailSent) {
           logger.info('Stock alert email sent successfully.');
@@ -100,10 +116,75 @@ export class UserController {
 
       return ResponseHandler.success(res, {
         message: 'User retrieved successfully',
-        data: payload,
+        data: true,
       });
     } catch (error) {
       logger.error('Error getting users:', error);
+      return ResponseHandler.error(res, {
+        message: 'Internal server error',
+        statusCode: 500,
+      });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    const payload: ResetPasswordUserDTO = req.body;
+
+    try {
+      const token = restoreUUID(payload.token);
+      const resetPassword = await prisma.reset_password.findFirst({
+        where: { id: token, deleted_at: null },
+      });
+      if (!resetPassword) {
+        return ResponseHandler.error(res, {
+          message: 'Reset password not found',
+          statusCode: 404,
+        });
+      }
+
+      if (resetPassword.created_at.getTime() + 24 * 60 * 60 * 1000 < new Date().getTime()) {
+        return ResponseHandler.error(res, {
+          message: 'Reset password expired',
+          statusCode: 400,
+        });
+      }
+
+      const user = await prisma.users.findFirst({
+        where: { email: resetPassword.email, deleted_at: null },
+      });
+      if (!user) {
+        return ResponseHandler.error(res, {
+          message: 'User not found',
+          statusCode: 404,
+        });
+      }
+
+      const hashedPassword = await hashPassword(payload.password);
+
+      const updatedUser = await prisma.users.update({
+        where: { id: user.id },
+        data: {
+          password: hashedPassword,
+          updated_at: new Date(),
+          updated_by: user.name,
+        },
+        select: {
+          name: true,
+          email: true,
+          role: true,
+          created_at: true,
+          created_by: true,
+          updated_at: true,
+          updated_by: true,
+        },
+      });
+
+      return ResponseHandler.success(res, {
+        message: 'User updated successfully',
+        data: updatedUser,
+      });
+    } catch (error) {
+      logger.error('Error updating users:', error);
       return ResponseHandler.error(res, {
         message: 'Internal server error',
         statusCode: 500,

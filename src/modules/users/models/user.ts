@@ -25,7 +25,9 @@ export interface RequestResetPasswordUserDTO {
 }
 
 export interface ResetPasswordUserDTO {
-  email: string;
+  token: string;
+  password: string;
+  confirm_password: string;
 }
 
 export interface UpdateUserDTO extends CreateUserDTO {}
