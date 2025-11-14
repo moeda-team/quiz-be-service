@@ -12,19 +12,19 @@ export const transporter = nodemailer.createTransport({
 export async function sendResetPasswordEmail(to: string, resetLink: string) {
   const html = generateHtmlTemplate(resetLink);
   const plainText = `
-You requested to reset your password.
+Reset Your Password
 
-Please click the link below to set a new password:
+You requested to reset your password. Click the link below:
 ${resetLink}
 
-If you did not request this change, you can safely ignore this email.
-  `;
+If you did not request this, safely ignore this email.
+`;
 
   try {
     await transporter.sendMail({
-      from: `"No-Reply" <${process.env.EMAIL_USER}>`,
+      from: `"Learning Platform" <${process.env.EMAIL_USER}>`,
       to,
-      subject: '🔒 Reset Your Password',
+      subject: 'Reset Your Password',
       text: plainText,
       html,
     });
@@ -41,68 +41,133 @@ function generateHtmlTemplate(resetLink: string) {
     <head>
       <style>
         body {
-          font-family: 'Segoe UI', sans-serif;
-          background-color: #f4f1ee;
+          background: #f2f2f2;
+          font-family: Arial, Helvetica, sans-serif;
           margin: 0;
           padding: 20px;
-          color: #000000;
         }
-        .container {
+
+        .email-wrapper {
           max-width: 600px;
           margin: auto;
-          background-color: #fff;
-          border-radius: 10px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-          overflow: hidden;
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 0;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .header {
-          background-color: #343434;
-          color: #fff;
-          padding: 24px;
-          text-align: center;
+
+        .top-bar {
+          padding: 20px 30px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
         }
+
+        .avatar {
+          width: 38px;
+          height: 38px;
+          background: #6a4dfd;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+        .title-block {
+          margin: 0;
+        }
+
+        .title-block h2 {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        .divider {
+          border-top: 1px solid #eaeaea;
+          margin: 0;
+        }
+
         .content {
-          padding: 20px 24px;
+          padding: 30px;
         }
+
+        .content h3 {
+          margin-top: 0;
+          font-size: 22px;
+          font-weight: 600;
+        }
+
+        .content p {
+          font-size: 15px;
+          color: #555;
+          line-height: 1.6;
+        }
+
         .btn {
           display: inline-block;
-          background-color: #007bff;
-          color: #fff !important;
-          padding: 12px 20px;
+          background: #0d6efd;
+          color: #ffffff !important;
+          padding: 14px 26px;
+          font-size: 16px;
           border-radius: 6px;
           text-decoration: none;
-          margin-top: 20px;
+          font-weight: 600;
+          margin: 20px 0;
         }
+
+        .note-box {
+          background: #fafafa;
+          padding: 16px;
+          border-radius: 6px;
+          font-size: 14px;
+          color: #444;
+          border: 1px solid #eee;
+        }
+
         .footer {
-          background-color: #f7f7f7;
-          font-size: 12px;
-          color: #777;
+          font-size: 13px;
+          color: #888;
           text-align: center;
-          padding: 14px;
+          padding: 25px;
         }
       </style>
     </head>
+
     <body>
-      <div class="container">
-        <div class="header">
-          <h2>Password Reset Request</h2>
-        </div>
+      <div class="email-wrapper">
+
+        <hr class="divider" />
+
+        <!-- Content -->
         <div class="content">
-          <p>Hi,</p>
-          <p>You recently requested to reset your password. Click the button below to create a new one:</p>
+          <h3>Reset Your Password</h3>
+
+          <p>Hi there,</p>
+          <p>We received a request to reset your password for your Learning Platform account. 
+          If you made this request, click the button below to reset your password.</p>
 
           <a href="${resetLink}" class="btn">Reset Password</a>
 
-          <p style="margin-top: 20px;">If the button doesn't work, you can open the link below:</p>
-          <p><a href="${resetLink}">${resetLink}</a></p>
+          <div class="note-box">
+            <strong>Note:</strong> This link will expire in 24 hours. If you didn't request a password reset, you can safely ignore this email.
+          </div>
 
-          <br>
-          <p>If you did not request this password reset, please ignore this message.</p>
+          <p style="margin-top:20px;">If the button above doesn't work, copy and paste this link into your browser:</p>
+          <p><a href="${resetLink}">${resetLink}</a></p>
         </div>
+
+        <!-- Footer -->
         <div class="footer">
-          This is an automated email. Please do not reply directly.
+          This email was sent to you automatically. If you have any questions, please contact our support team.<br>
+          © 2025 Learning Platform. All rights reserved.
         </div>
+
       </div>
     </body>
-  </html>`;
+  </html>
+  `;
 }

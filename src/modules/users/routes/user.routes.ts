@@ -18,7 +18,7 @@ router.get('/health', basicAuth, healthController.check);
 router.get('/', jwtAuth, roleAuth(UserRole.TEACHER), userController.getAllUsers);
 router.get('/profile', jwtAuth, roleAuth(UserRole.STUDENT), userController.getUserById);
 router.post(
-  '/profile/reset',
+  '/profile/reset/request',
   basicAuth,
   validateRequestResetPassword,
   userController.resetPassword,
