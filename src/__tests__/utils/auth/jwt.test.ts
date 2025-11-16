@@ -229,56 +229,56 @@ describe('JWT Utilities', () => {
   describe('hasPermission', () => {
     it('should check permissions correctly for owner role', () => {
       // Act & Assert
-      expect(hasPermission(UserRole.OWNER, UserRole.OWNER)).toBe(true);
-      expect(hasPermission(UserRole.OWNER, UserRole.STORE_MANAGER)).toBe(true);
-      expect(hasPermission(UserRole.OWNER, UserRole.EMPLOYEE)).toBe(true);
+      expect(hasPermission(UserRole.ADMIN, UserRole.ADMIN)).toBe(true);
+      expect(hasPermission(UserRole.ADMIN, UserRole.TEACHER)).toBe(true);
+      expect(hasPermission(UserRole.ADMIN, UserRole.STUDENT)).toBe(true);
     });
 
     it('should check permissions correctly for store manager role', () => {
       // Act & Assert
-      expect(hasPermission(UserRole.STORE_MANAGER, UserRole.OWNER)).toBe(false);
-      expect(hasPermission(UserRole.STORE_MANAGER, UserRole.STORE_MANAGER)).toBe(true);
-      expect(hasPermission(UserRole.STORE_MANAGER, UserRole.EMPLOYEE)).toBe(true);
+      expect(hasPermission(UserRole.TEACHER, UserRole.ADMIN)).toBe(false);
+      expect(hasPermission(UserRole.TEACHER, UserRole.TEACHER)).toBe(true);
+      expect(hasPermission(UserRole.TEACHER, UserRole.STUDENT)).toBe(true);
     });
 
     it('should check permissions correctly for employee role', () => {
       // Act & Assert
-      expect(hasPermission(UserRole.EMPLOYEE, UserRole.OWNER)).toBe(false);
-      expect(hasPermission(UserRole.EMPLOYEE, UserRole.STORE_MANAGER)).toBe(false);
-      expect(hasPermission(UserRole.EMPLOYEE, UserRole.EMPLOYEE)).toBe(true);
+      expect(hasPermission(UserRole.STUDENT, UserRole.ADMIN)).toBe(false);
+      expect(hasPermission(UserRole.STUDENT, UserRole.TEACHER)).toBe(false);
+      expect(hasPermission(UserRole.STUDENT, UserRole.STUDENT)).toBe(true);
     });
 
     it('should return false for invalid roles', () => {
       // Act & Assert
-      expect(hasPermission('' as UserRole, UserRole.EMPLOYEE)).toBe(false);
-      expect(hasPermission(UserRole.OWNER, '' as UserRole)).toBe(false);
-      expect(hasPermission('INVALID_ROLE' as UserRole, UserRole.EMPLOYEE)).toBe(false);
+      expect(hasPermission('' as UserRole, UserRole.STUDENT)).toBe(false);
+      expect(hasPermission(UserRole.ADMIN, '' as UserRole)).toBe(false);
+      expect(hasPermission('INVALID_ROLE' as UserRole, UserRole.STUDENT)).toBe(false);
     });
   });
 
   describe('getRolePermissions', () => {
     it('should get role permissions correctly for owner', () => {
       // Act
-      const permissions = getRolePermissions(UserRole.OWNER);
+      const permissions = getRolePermissions(UserRole.ADMIN);
 
       // Assert
-      expect(permissions).toEqual([UserRole.OWNER, UserRole.STORE_MANAGER, UserRole.EMPLOYEE]);
+      expect(permissions).toEqual([UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT]);
     });
 
     it('should get role permissions correctly for store manager', () => {
       // Act
-      const permissions = getRolePermissions(UserRole.STORE_MANAGER);
+      const permissions = getRolePermissions(UserRole.TEACHER);
 
       // Assert
-      expect(permissions).toEqual([UserRole.STORE_MANAGER, UserRole.EMPLOYEE]);
+      expect(permissions).toEqual([UserRole.TEACHER, UserRole.STUDENT]);
     });
 
     it('should get role permissions correctly for employee', () => {
       // Act
-      const permissions = getRolePermissions(UserRole.EMPLOYEE);
+      const permissions = getRolePermissions(UserRole.STUDENT);
 
       // Assert
-      expect(permissions).toEqual([UserRole.EMPLOYEE]);
+      expect(permissions).toEqual([UserRole.STUDENT]);
     });
 
     it('should return empty array for invalid role', () => {

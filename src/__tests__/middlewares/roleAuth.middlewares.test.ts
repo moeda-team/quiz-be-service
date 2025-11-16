@@ -26,7 +26,7 @@ describe('Role Authentication Middleware', () => {
 
     mockPrisma.user.findUnique.mockResolvedValueOnce(null);
 
-    const middleware = roleAuth(UserRole.OWNER);
+    const middleware = roleAuth(UserRole.ADMIN);
 
     // Act
     await middleware(req as Request, res as Response, next);
@@ -54,12 +54,12 @@ describe('Role Authentication Middleware', () => {
 
     mockPrisma.user.findUnique.mockResolvedValueOnce({
       id: '123',
-      role: UserRole.EMPLOYEE,
+      role: UserRole.STUDENT,
     });
 
     jest.spyOn(jwtUtils, 'hasPermission').mockReturnValueOnce(false);
 
-    const middleware = roleAuth(UserRole.OWNER);
+    const middleware = roleAuth(UserRole.ADMIN);
 
     // Act
     await middleware(req as Request, res as Response, next);
@@ -68,7 +68,7 @@ describe('Role Authentication Middleware', () => {
     expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
       where: { id: '123' },
     });
-    expect(jwtUtils.hasPermission).toHaveBeenCalledWith(UserRole.EMPLOYEE, UserRole.OWNER);
+    expect(jwtUtils.hasPermission).toHaveBeenCalledWith(UserRole.STUDENT, UserRole.ADMIN);
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -88,12 +88,12 @@ describe('Role Authentication Middleware', () => {
 
     mockPrisma.user.findUnique.mockResolvedValueOnce({
       id: '123',
-      role: UserRole.OWNER,
+      role: UserRole.ADMIN,
     });
 
     jest.spyOn(jwtUtils, 'hasPermission').mockReturnValueOnce(true);
 
-    const middleware = roleAuth(UserRole.OWNER);
+    const middleware = roleAuth(UserRole.ADMIN);
 
     // Act
     await middleware(req as Request, res as Response, next);
@@ -102,7 +102,7 @@ describe('Role Authentication Middleware', () => {
     expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
       where: { id: '123' },
     });
-    expect(jwtUtils.hasPermission).toHaveBeenCalledWith(UserRole.OWNER, UserRole.OWNER);
+    expect(jwtUtils.hasPermission).toHaveBeenCalledWith(UserRole.ADMIN, UserRole.ADMIN);
     expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
@@ -120,7 +120,7 @@ describe('Role Authentication Middleware', () => {
       role: null,
     });
 
-    const middleware = roleAuth(UserRole.EMPLOYEE);
+    const middleware = roleAuth(UserRole.STUDENT);
 
     // Act
     await middleware(req as Request, res as Response, next);
