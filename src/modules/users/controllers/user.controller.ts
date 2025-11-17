@@ -11,7 +11,7 @@ import { ResponseHandler } from '../../../utils/response/responseHandler';
 import prisma from '../../../lib/prisma';
 import { hashPassword } from '../../../utils/auth/hash';
 import { sendResetPasswordEmail } from '../../../utils/mail/resetPassword';
-import { restoreUUID } from '@/utils/common/restoreUuid';
+import { restoreUUID } from '../../../utils/common/restoreUuid';
 
 export class UserController {
   async getAllUsers(req: Request, res: Response) {
