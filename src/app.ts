@@ -36,9 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const router = Router();
-
-router.use(`${config.apiPrefix}/users`, userRouter);
-
+router.use(`/users`, userRouter);
 app.use(router);
 
 app.use(notFoundHandler);
