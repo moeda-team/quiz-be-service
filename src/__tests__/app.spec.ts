@@ -34,16 +34,16 @@ jest.mock('@/middlewares', () => ({
 }));
 
 // silence logger
-jest.mock('@/utils/common/logger', () => ({ logger: { info: jest.fn(), error: jest.fn() } }));
+jest.mock('../utils/common/logger', () => ({ logger: { info: jest.fn(), error: jest.fn() } }));
 
 // response handler so we can assert timeout branch later
 export const errorSpy = jest.fn();
-jest.mock('@/utils/response/responseHandler', () => ({
+jest.mock('../utils/response/responseHandler', () => ({
   ResponseHandler: { error: (...args: any[]) => errorSpy(...args) },
 }));
 
 // mock config with predictable values
-jest.mock('@/config', () => ({
+jest.mock('../config', () => ({
   config: {
     apiPrefix: '/api',
     corsOrigin: 'http://allowed.com, http://another.com',
@@ -64,11 +64,11 @@ const mockRouter = express.Router();
   'files',
   'attendance',
 ].forEach(name => {
-  jest.mock(`@/modules/${name}/routes`, () => mockRouter);
+  jest.mock(`../modules/${name}/routes`, () => mockRouter);
 });
 
 // ---------- import app (after mocks) ----------
-import { app } from '@/app';
+import { app } from '../app';
 
 describe('app.ts', () => {
   it('allows request from whitelisted origin', async () => {

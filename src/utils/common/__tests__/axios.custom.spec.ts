@@ -1,4 +1,4 @@
-import { axiosGet, axiosPost } from '@/utils/common/axios.custom';
+import { axiosGet, axiosPost } from '../axios.custom';
 import axios from 'axios';
 import { Request, Response } from 'express';
 

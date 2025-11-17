@@ -30,7 +30,7 @@ jest.mock('@prisma/client', () => {
 
 // Silence logger output and capture its calls
 export const loggerInfoSpy = jest.fn();
-jest.mock('@/utils/common/logger', () => ({
+jest.mock('../utils/common/logger', () => ({
   logger: { info: (...args: any[]) => loggerInfoSpy(...args), error: jest.fn() },
 }));
 

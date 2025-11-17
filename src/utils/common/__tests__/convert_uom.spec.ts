@@ -1,4 +1,4 @@
-import { convertValue } from '@/utils/common/convertUom';
+import { convertValue } from '../convertUom';
 
 // Simple smoke tests for unit conversion helper
 
