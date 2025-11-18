@@ -15,8 +15,8 @@ import userRouter from './modules/users/routes';
 const app = express();
 const allowedOrigins = config.corsOrigin.split(',').map(origin => origin.trim());
 
-app.use(rateLimiter);
-app.use(timeout('10s'));
+// app.use(rateLimiter);
+// app.use(timeout('10s'));
 app.use(helmet());
 app.use(
   cors({
@@ -32,14 +32,14 @@ app.use(
 );
 
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const router = Router();
 router.use(`/users`, userRouter);
 app.use(router);
 
-app.use(notFoundHandler);
+// app.use(notFoundHandler);
 app.use(errorHandler);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
