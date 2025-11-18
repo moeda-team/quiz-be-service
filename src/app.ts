@@ -32,8 +32,8 @@ app.use(
 );
 
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 const router = Router();
 router.use(`/users`, userRouter);
