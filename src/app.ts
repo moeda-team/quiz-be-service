@@ -15,8 +15,6 @@ import userRouter from './modules/users/routes';
 const app = express();
 const allowedOrigins = config.corsOrigin.split(',').map(origin => origin.trim());
 
-app.set('trust proxy', 1);
-
 app.use(rateLimiter);
 app.use(timeout('10s'));
 app.use(helmet());
