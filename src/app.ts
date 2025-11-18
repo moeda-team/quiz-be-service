@@ -38,6 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 const router = Router();
 router.use(`/users`, userRouter);
 app.use(router);
+
 app.use(notFoundHandler);
 app.use(errorHandler);
 
