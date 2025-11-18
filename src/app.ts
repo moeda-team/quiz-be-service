@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import timeout from 'connect-timeout';
 import { Router } from 'express';
 import { NextFunction, Request, Response } from 'express';
-
+import bodyParser from 'body-parser';
 import { config } from './config';
 import { errorHandler, notFoundHandler, rateLimiter } from './middlewares';
 import { logger } from './utils/common/logger';
@@ -32,20 +32,8 @@ app.use(
 );
 
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
-app.use(
-  express.json({
-    limit: '10mb',
-    verify: () => {}, // ✔️ valid function
-  }),
-);
-
-app.use(
-  express.urlencoded({
-    extended: true,
-    limit: '10mb',
-    verify: () => {}, // ✔️ valid function
-  }),
-);
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const router = Router();
 router.use(`/users`, userRouter);
