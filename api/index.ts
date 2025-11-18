@@ -1,5 +1,5 @@
 import serverless from 'serverless-http';
-import { app } from '../src/app';
+import app from '../src/app';
 import { config } from '../src/config';
 import { logger } from '../src/utils/common/logger';
 

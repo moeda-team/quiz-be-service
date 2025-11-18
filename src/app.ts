@@ -53,4 +53,4 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   next(err);
 });
 
-export { app };
+export default app;
