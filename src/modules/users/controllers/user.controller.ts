@@ -22,6 +22,7 @@ export class UserController {
           email: true,
           role: true,
         },
+        where: { deleted_at: null },
         orderBy: {
           created_at: 'desc',
         },
@@ -199,6 +200,7 @@ export class UserController {
       const existingUser = await prisma.users.findFirst({
         where: {
           OR: [{ email: userData.email }],
+          deleted_at: null,
         },
       });
       if (existingUser) {
@@ -241,7 +243,7 @@ export class UserController {
 
     try {
       const users = await prisma.users.findUnique({
-        where: { id },
+        where: { id, deleted_at: null },
       });
       if (!users) {
         return ResponseHandler.error(res, {
@@ -302,7 +304,7 @@ export class UserController {
 
     try {
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: userId, deleted_at: null },
       });
       if (!user) {
         return ResponseHandler.error(res, {
