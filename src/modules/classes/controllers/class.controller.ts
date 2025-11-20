@@ -3,7 +3,6 @@ import { logger } from '../../../utils/common/logger';
 import { ResponseHandler } from '../../../utils/response/responseHandler';
 import prisma from '../../../lib/prisma';
 import { CreateClassDTO, UpdateClassDTO } from '../models/class';
-import { schedule } from 'node-cron';
 
 export class ClassController {
   async getAllClasses(req: Request, res: Response) {
@@ -211,7 +210,30 @@ export class ClassController {
           deleted_at: new Date(),
           deleted_by: user.userId,
         },
+        include: {
+          schedules: true,
+        },
       });
+      if (!classes) {
+        return ResponseHandler.error(res, {
+          message: 'Class not found',
+          statusCode: 404,
+        });
+      }
+      const schedule_id = classes.schedules[0].id;
+      const schedule = await prisma.schedules.update({
+        where: { id: schedule_id, deleted_at: null },
+        data: {
+          deleted_at: new Date(),
+          deleted_by: user.userId,
+        },
+      });
+      if (!schedule) {
+        return ResponseHandler.error(res, {
+          message: 'Schedule not deleted',
+          statusCode: 404,
+        });
+      }
       return ResponseHandler.success(res, {
         message: 'Class deleted successfully',
         data: classes,
