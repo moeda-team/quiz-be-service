@@ -26,6 +26,7 @@ model users {
   submissions     submissions[]
   notifications   notifications[]
   activities      activities[]
+  schedules       schedules[]
 }
 
 model reset_password {
@@ -45,6 +46,8 @@ model classes {
   name        String
   description String?
   teacher_id  String
+  subject     String
+  room        String?
 
   teacher   users             @relation("TeacherClasses", fields: [teacher_id], references: [id])
   schedules schedules[]
@@ -78,11 +81,13 @@ model student_classes {
 model schedules {
   id         String @id @default(uuid())
   class_id   String
+  teacher_id String
   day        String
   start_time String
   end_time   String
 
-  class classes @relation(fields: [class_id], references: [id])
+  class   classes @relation(fields: [class_id], references: [id])
+  teacher users   @relation(fields: [teacher_id], references: [id])
 
   created_at DateTime  @default(now())
   created_by String    @db.VarChar(36)

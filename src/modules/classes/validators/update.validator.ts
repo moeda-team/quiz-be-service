@@ -2,10 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { ResponseHandler } from '../../../utils/response/responseHandler';
 
-export const validateDeleteUser = [
-  body('id').isArray({ min: 1 }).withMessage('ID must be an array with at least one item'),
+export const validateUpdateUser = [
+  body('name').trim().notEmpty().withMessage('Name is required'),
 
-  body('id.*').isUUID().withMessage('Each ID must be a valid UUID'),
+  body('description').trim().optional(),
+
+  body('subject').trim().notEmpty().withMessage('Subject is required'),
+
+  body('room').trim().optional(),
 
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);

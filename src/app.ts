@@ -12,6 +12,7 @@ import { logger } from './utils/common/logger';
 import { ResponseHandler } from './utils/response/responseHandler';
 import userRouter from './modules/users/routes';
 import studentRouter from './modules/students/routes';
+import classRouter from './modules/classes/routes';
 
 const app = express();
 const allowedOrigins = config.corsOrigin.split(',').map(origin => origin.trim());
@@ -39,6 +40,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const router = Router();
 router.use(`/users`, userRouter);
 router.use(`/students`, studentRouter);
+router.use(`/classes`, classRouter);
 app.use(router);
 
 app.use(notFoundHandler);
