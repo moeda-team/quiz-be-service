@@ -5,6 +5,7 @@ import { jwtAuth, roleAuth, basicAuth } from '../../../middlewares';
 import { UserRole } from '../../../utils/auth/jwt';
 import { validateCreateUser } from '../validators/create.validator';
 import { validateUpdateUser } from '../validators/update.validator';
+import { validateAssignStudent } from '../validators/assignStudent.validator';
 
 const router = Router();
 const classController = new ClassController();
@@ -28,5 +29,12 @@ router.put(
   classController.updateClass,
 );
 router.delete('/:id', jwtAuth, roleAuth(UserRole.TEACHER), classController.deleteClass);
+router.post(
+  '/:id/assign-student',
+  jwtAuth,
+  roleAuth(UserRole.TEACHER),
+  validateAssignStudent,
+  classController.assignStudent,
+);
 
 export default router;

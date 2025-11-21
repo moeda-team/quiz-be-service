@@ -33,3 +33,7 @@ export interface UpdateClassDTO {
   start_time: string;
   end_time: string;
 }
+
+export interface AssignStudentDTO {
+  student_id: string[];
+}
