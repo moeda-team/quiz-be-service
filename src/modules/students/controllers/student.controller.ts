@@ -4,7 +4,7 @@ import { ResponseHandler } from '../../../utils/response/responseHandler';
 import prisma from '../../../lib/prisma';
 import { UserRole } from '../../../utils/auth/jwt';
 
-export class UserController {
+export class StudentController {
   async getAllStudents(req: Request, res: Response) {
     try {
       const students = await prisma.users.findMany({

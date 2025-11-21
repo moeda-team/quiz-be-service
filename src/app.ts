@@ -13,6 +13,7 @@ import { ResponseHandler } from './utils/response/responseHandler';
 import userRouter from './modules/users/routes';
 import studentRouter from './modules/students/routes';
 import classRouter from './modules/classes/routes';
+import courseRouter from './modules/courses/routes';
 
 const app = express();
 const allowedOrigins = config.corsOrigin.split(',').map(origin => origin.trim());
@@ -41,6 +42,7 @@ const router = Router();
 router.use(`/users`, userRouter);
 router.use(`/students`, studentRouter);
 router.use(`/classes`, classRouter);
+router.use(`/courses`, courseRouter);
 app.use(router);
 
 app.use(notFoundHandler);
