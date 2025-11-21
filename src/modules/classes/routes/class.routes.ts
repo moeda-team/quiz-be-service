@@ -36,5 +36,11 @@ router.post(
   validateAssignStudent,
   classController.assignStudent,
 );
+router.delete(
+  '/:id/unassign-student',
+  jwtAuth,
+  roleAuth(UserRole.TEACHER),
+  classController.unassignStudent,
+);
 
 export default router;

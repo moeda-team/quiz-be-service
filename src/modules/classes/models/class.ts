@@ -37,3 +37,7 @@ export interface UpdateClassDTO {
 export interface AssignStudentDTO {
   student_id: string[];
 }
+
+export interface UnassignStudentDTO {
+  student_id: string[];
+}

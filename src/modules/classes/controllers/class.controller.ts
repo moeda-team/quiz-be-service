@@ -2,7 +2,12 @@ import { Request, Response } from 'express';
 import { logger } from '../../../utils/common/logger';
 import { ResponseHandler } from '../../../utils/response/responseHandler';
 import prisma from '../../../lib/prisma';
-import { AssignStudentDTO, CreateClassDTO, UpdateClassDTO } from '../models/class';
+import {
+  AssignStudentDTO,
+  CreateClassDTO,
+  UnassignStudentDTO,
+  UpdateClassDTO,
+} from '../models/class';
 
 export class ClassController {
   async getAllClasses(req: Request, res: Response) {
@@ -251,7 +256,6 @@ export class ClassController {
     const { user } = req as Request & { user: { userId: string } };
     const class_id = req.params.id;
     const assignStudentData: AssignStudentDTO = req.body;
-    logger.info('assignStudentData', assignStudentData);
 
     try {
       const students = await prisma.users.findMany({
@@ -295,6 +299,58 @@ export class ClassController {
       });
     } catch (error) {
       logger.error('Error assigning student:', error);
+      return ResponseHandler.error(res, {
+        message: 'Internal server error',
+        statusCode: 500,
+      });
+    }
+  }
+
+  async unassignStudent(req: Request, res: Response) {
+    const class_id = req.params.id;
+    const unassignStudentData: UnassignStudentDTO = req.body;
+
+    try {
+      const students = await prisma.users.findMany({
+        where: {
+          id: { in: unassignStudentData.student_id },
+          deleted_at: null,
+        },
+      });
+      if (students.length !== unassignStudentData.student_id.length) {
+        return ResponseHandler.error(res, {
+          message: 'Some students were not found',
+          statusCode: 404,
+        });
+      }
+
+      const classData = await prisma.classes.findUnique({
+        where: {
+          id: class_id,
+          deleted_at: null,
+        },
+      });
+      if (!classData) {
+        return ResponseHandler.error(res, {
+          message: 'Class not found',
+          statusCode: 404,
+        });
+      }
+
+      const studentClass = await prisma.student_classes.deleteMany({
+        where: {
+          class_id,
+          student_id: { in: unassignStudentData.student_id },
+          deleted_at: null,
+        },
+      });
+
+      return ResponseHandler.success(res, {
+        message: 'Students unassigned successfully',
+        data: studentClass,
+      });
+    } catch (error) {
+      logger.error('Error unassigning student:', error);
       return ResponseHandler.error(res, {
         message: 'Internal server error',
         statusCode: 500,
