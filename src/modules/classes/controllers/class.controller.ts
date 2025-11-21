@@ -8,6 +8,7 @@ import {
   UnassignStudentDTO,
   UpdateClassDTO,
 } from '../models/class';
+import { CreateCourseDTO, UpdateCourseDTO } from '../models/course';
 
 export class ClassController {
   async getAllClasses(req: Request, res: Response) {
@@ -39,11 +40,28 @@ export class ClassController {
         where: { id: id, deleted_at: null },
         include: {
           teacher: true,
-          schedules: true,
-          students: true,
-          tasks: true,
+          schedules: {
+            where: { deleted_at: null },
+            orderBy: { day: 'asc' },
+          },
+          courses: {
+            where: { deleted_at: null },
+            orderBy: { order: 'asc' },
+            include: {
+              tasks: true,
+            },
+          },
+          students: {
+            where: { deleted_at: null },
+            select: {
+              id: true,
+              user: true,
+            },
+            orderBy: { user: { name: 'asc' } },
+          },
         },
       });
+
       if (!classes) {
         return ResponseHandler.error(res, {
           message: 'Class not found',
@@ -351,6 +369,185 @@ export class ClassController {
       });
     } catch (error) {
       logger.error('Error unassigning student:', error);
+      return ResponseHandler.error(res, {
+        message: 'Internal server error',
+        statusCode: 500,
+      });
+    }
+  }
+
+  async addCourse(req: Request, res: Response) {
+    const { user } = req as Request & { user: { userId: string } };
+    const courseData: CreateCourseDTO = req.body;
+
+    try {
+      const teacher_id = user.userId;
+      const teacher = await prisma.users.findUnique({
+        where: { id: teacher_id, role: 'teacher' },
+      });
+      if (!teacher) {
+        return ResponseHandler.error(res, {
+          message: 'Teacher not found',
+          statusCode: 404,
+        });
+      }
+
+      const class_id = req.params.id;
+      const classes = await prisma.classes.findUnique({
+        where: {
+          id: class_id,
+          deleted_at: null,
+        },
+      });
+      if (!classes) {
+        return ResponseHandler.error(res, {
+          message: 'Class not found',
+          statusCode: 404,
+        });
+      }
+
+      const getLatestOrder = await prisma.courses.findFirst({
+        where: {
+          class_id: class_id,
+          deleted_at: null,
+        },
+        orderBy: {
+          order: 'desc',
+        },
+      });
+
+      const course = await prisma.courses.create({
+        data: {
+          name: courseData.name,
+          description: courseData.description,
+          video_title: courseData.video_title,
+          video: courseData.video,
+          order: getLatestOrder?.order ? getLatestOrder.order + 1 : 1,
+          class_id: class_id,
+          created_at: new Date(),
+          created_by: user.userId,
+        },
+      });
+      if (!course) {
+        return ResponseHandler.error(res, {
+          message: 'Course not created',
+          statusCode: 404,
+        });
+      }
+
+      return ResponseHandler.success(res, {
+        message: 'Course created successfully',
+        data: course,
+      });
+    } catch (error) {
+      logger.error('Error creating user:', error);
+      return ResponseHandler.error(res, {
+        message: 'Internal server error',
+        statusCode: 500,
+      });
+    }
+  }
+
+  async updateCourse(req: Request, res: Response) {
+    const { user } = req as Request & { user: { userId: string } };
+    const courseData: UpdateCourseDTO = req.body;
+
+    try {
+      const class_id = req.params.id;
+      const classes = await prisma.classes.findUnique({
+        where: {
+          id: class_id,
+          deleted_at: null,
+        },
+      });
+      if (!classes) {
+        return ResponseHandler.error(res, {
+          message: 'Class not found',
+          statusCode: 404,
+        });
+      }
+
+      const course_id = req.params.course_id;
+      const course = await prisma.courses.findUnique({
+        where: {
+          id: course_id,
+          deleted_at: null,
+        },
+      });
+      if (!course) {
+        return ResponseHandler.error(res, {
+          message: 'Course not found',
+          statusCode: 404,
+        });
+      }
+
+      const result = await prisma.courses.update({
+        where: {
+          id: course_id,
+          deleted_at: null,
+        },
+        data: {
+          ...courseData,
+          updated_at: new Date(),
+          updated_by: user.userId,
+        },
+      });
+
+      return ResponseHandler.success(res, {
+        message: 'Course updated successfully',
+        data: result,
+      });
+    } catch (error) {
+      logger.error('Error updating user:', error);
+      return ResponseHandler.error(res, {
+        message: 'Internal server error',
+        statusCode: 500,
+      });
+    }
+  }
+
+  async deleteCourse(req: Request, res: Response) {
+    const { user } = req as Request & { user: { userId: string } };
+
+    try {
+      const class_id = req.params.id;
+      const classes = await prisma.classes.findUnique({
+        where: {
+          id: class_id,
+          deleted_at: null,
+        },
+      });
+      if (!classes) {
+        return ResponseHandler.error(res, {
+          message: 'Class not found',
+          statusCode: 404,
+        });
+      }
+
+      const course_id = req.params.course_id;
+      const course = await prisma.courses.update({
+        where: {
+          id: course_id,
+          deleted_at: null,
+        },
+        data: {
+          deleted_at: new Date(),
+          deleted_by: user.userId,
+        },
+      });
+      if (!course) {
+        return ResponseHandler.error(res, {
+          message: 'Course not found',
+          statusCode: 404,
+        });
+      }
+
+      return ResponseHandler.success(res, {
+        message: 'Course deleted successfully',
+        data: course,
+      });
+    } catch (error) {
+      logger.error('Error deleting user:', error);
       return ResponseHandler.error(res, {
         message: 'Internal server error',
         statusCode: 500,

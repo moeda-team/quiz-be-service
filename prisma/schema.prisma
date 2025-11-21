@@ -68,8 +68,8 @@ model student_classes {
   class_id   String
   student_id String
 
-  student users   @relation(fields: [student_id], references: [id])
-  class   classes @relation(fields: [class_id], references: [id])
+  user  users   @relation(fields: [student_id], references: [id])
+  class classes @relation(fields: [class_id], references: [id])
 
   created_at DateTime  @default(now())
   created_by String    @db.VarChar(36)

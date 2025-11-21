@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import { ResponseHandler } from '../../../utils/response/responseHandler';
+import { ResponseHandler } from '../../../../utils/response/responseHandler';
 
 export const validateAssignStudent = [
   body('student_id')

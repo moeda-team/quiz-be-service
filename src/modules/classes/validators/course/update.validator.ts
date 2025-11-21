@@ -1,33 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import { ResponseHandler } from '../../../utils/response/responseHandler';
+import { ResponseHandler } from '../../../../utils/response/responseHandler';
 
-export const validateCreateUser = [
+export const validateUpdateCourse = [
   body('name').trim().notEmpty().withMessage('Name is required'),
 
   body('description').trim().optional(),
 
-  body('subject').trim().notEmpty().withMessage('Subject is required'),
+  body('video_title').trim().optional(),
 
-  body('room').trim().optional(),
+  body('video').trim().optional(),
 
-  body('day')
+  body('order')
     .trim()
-    .isIn(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'])
     .notEmpty()
-    .withMessage('Day is required'),
-
-  body('start_time')
-    .trim()
-    .isTime({ hourFormat: 'hour24' })
-    .notEmpty()
-    .withMessage('Start time is required'),
-
-  body('end_time')
-    .trim()
-    .isTime({ hourFormat: 'hour24' })
-    .notEmpty()
-    .withMessage('End time is required'),
+    .withMessage('Order is required')
+    .isInt()
+    .withMessage('Order must be an integer')
+    .toInt(),
 
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
